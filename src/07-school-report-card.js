@@ -41,5 +41,87 @@
  *   // => { name: "Priya", totalMarks: 63, percentage: 31.5, grade: "F", ... }
  */
 export function generateReportCard(student) {
-  // Your code here
+  if (typeof student !== "object" || student === null) return null;
+  if (typeof student.name !== "string" || student.name.trim() === "")
+    return null;
+  if (
+    typeof student.marks !== "object" ||
+    student.marks === null ||
+    Object.keys(student.marks).length === 0
+  )
+    return null;
+  const name = student.name.trim();
+  const validMarks = Object.entries(student.marks).filter((itm) => {
+    return (
+      typeof itm[0] === "string" &&
+      typeof itm[1] === "number" &&
+      Number.isFinite(itm[1]) &&
+      itm[1] >= 0 &&
+      itm[1] <= 100
+    );
+  });
+
+  if (validMarks.length === 0) return null;
+
+  const totalMarks = validMarks.reduce((acc, itm) => {
+    const mark = typeof itm[1] === "number" ? itm[1] : null;
+    return acc + mark;
+  }, 0);
+  if (totalMarks < 0) return null;
+  const numSubjects = Object.keys(student.marks).length;
+  if (numSubjects === 0) return null;
+  const percentage = Math.round((totalMarks / numSubjects) * 100) / 100;
+
+  let grade = "";
+
+  if (percentage >= 90) {
+    grade = "A+";
+  } else if (percentage >= 80) {
+    grade = "A";
+  } else if (percentage >= 70) {
+    grade = "B";
+  } else if (percentage >= 60) {
+    grade = "C";
+  } else if (percentage >= 40) {
+    grade = "D";
+  } else {
+    grade = "F";
+  }
+
+  const passedSubjects = validMarks
+    .filter((itm) => {
+      return itm[1] >= 40;
+    })
+    .map((sub) => {
+      return sub[0];
+    });
+  const failedSubjects = validMarks
+    .filter((itm) => {
+      return itm[1] < 40;
+    })
+    .map((sub) => {
+      return sub[0];
+    });
+
+  const subjectCount = Object.keys(student.marks).length;
+
+  const highestSubject = validMarks.reduce((max, curr) =>
+    curr[1] > max[1] ? curr : max,
+  )[0];
+
+  const lowestSubject = validMarks.reduce((min, curr) =>
+    curr[1] < min[1] ? curr : min,
+  )[0];
+
+  return {
+    name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects: passedSubjects.length > 0 ? passedSubjects : [],
+    failedSubjects: failedSubjects.length > 0 ? failedSubjects : [],
+    subjectCount,
+  };
 }

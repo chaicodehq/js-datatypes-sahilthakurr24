@@ -28,5 +28,23 @@
  *   // => "INVALID"
  */
 export function maskAadhaar(aadhaarNumber) {
-  // Your code here
+  //validation check
+  if (typeof aadhaarNumber !== "string") return "INVALID";
+  const cleanStr = aadhaarNumber.trim();
+  if (!/^\d{12}$/.test(cleanStr)) return "INVALID";
+  const len = 8;
+  // formatting aadhaar number
+  let adNum = cleanStr.split("");
+  for (let i = 0; i < len; i++) {
+    adNum[i] = "X";
+  }
+  let formattedAdharNumber = "";
+
+  for (let i = 0; i < cleanStr.length; i++) {
+    formattedAdharNumber += adNum[i];
+    if (i === 3 || i === 7) {
+      formattedAdharNumber += "-";
+    }
+  }
+  return formattedAdharNumber;
 }

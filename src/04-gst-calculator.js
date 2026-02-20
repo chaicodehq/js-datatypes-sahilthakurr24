@@ -39,5 +39,42 @@
  *   // => { baseAmount: 500, gstRate: 0, gstAmount: 0, totalAmount: 500 }
  */
 export function calculateGST(amount, category) {
-  // Your code here
+  if (
+    typeof amount !== "number" ||
+    !Number.isFinite(amount) ||
+    amount <= 0 ||
+    typeof category !== "string" ||
+    category.trim() === "" ||
+    category.trim().toLowerCase() === "unknown"
+  )
+    return null;
+
+  const cleanCategory = category.trim().toLowerCase();
+  const baseAmount = amount;
+  let gstRate = 0;
+
+  switch (cleanCategory) {
+    case "essential":
+      gstRate = 0;
+      break;
+    case "food":
+      gstRate = 5;
+      break;
+    case "standard":
+      gstRate = 12;
+      break;
+    case "electronics":
+      gstRate = 18;
+      break;
+    case "luxury":
+      gstRate = 28;
+      break;
+    default:
+      return null;
+  }
+
+  const gstAmount = Number(((amount * gstRate) / 100).toFixed(2));
+  const totalAmount = Number((baseAmount + gstAmount).toFixed(2));
+  //tofixed returns string toh hme parseFloat() use krna pda and to get the result as a number we can also use Number()
+  return { baseAmount, gstRate, gstAmount, totalAmount };
 }
